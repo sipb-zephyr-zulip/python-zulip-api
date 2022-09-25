@@ -31,6 +31,16 @@ from zulip import RandomExponentialBackoff
 
 DEFAULT_SITE = "https://api.zulip.com"
 
+# The Zephyr default format is used to tag mirrored messages as coming through
+# the mirror. Messages with a default format on this list will not be mirrored
+# to Zulip. Messages *from* Zulip will use the first format in this list.
+# We support multiple because the per-user mirrors *send* the messages, but
+# the per-class mirrors *receive* them, so a rotation needs to be staggered.
+# Each separate Zulip instance mirrored with a single Zephyr realm needs a
+# unique value here.
+ZEPHYR_DEFAULT_FORMAT = ["Error: http://mit.edu/df?a"]
+
+
 class States(Enum):
     Startup = auto()
     ZulipToZephyr = auto()
@@ -478,9 +488,7 @@ def process_notice(
     if zephyr_class.lower() not in current_zephyr_subs and not is_personal:
         logger.debug("Skipping ... %s/%s/%s", zephyr_class, zephyr_instance, is_personal)
         return
-    if notice.z_default_format.startswith(b"Zephyr error: See") or notice.z_default_format.endswith(
-        b"@(@color(blue))"
-    ):
+    if notice.z_default_format in ZEPHYR_DEFAULT_FORMAT or notice.z_default_format.endswith("@(@color(blue))"):
         logger.debug("Skipping message we got from Zulip!")
         return
     if (
@@ -779,7 +787,7 @@ Feedback button or at support@zulip.com."""
         "-s",
         message["sender_full_name"],
         "-F",
-        "Zephyr error: See http://zephyr.1ts.org/wiki/df",
+        ZEPHYR_DEFAULT_FORMAT[0],
         "-x",
         "UTF-8",
     ]
