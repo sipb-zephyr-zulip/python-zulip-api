@@ -392,11 +392,11 @@ def parse_crypt_table(zephyr_class: str, instance: str) -> Optional[str]:
             # Ignore blank lines
             continue
         match = re.match(
-            r"^crypt-(?P<class>\S+):\s+((?P<algorithm>(AES|DES)):\s+)?(?P<keypath>\S+)$", line
+            r"^crypt-(?P<class>\S+):\s+((?P<algorithm>(AES|DES)):\s*)?(?P<keypath>\S+)$", line
         )
         if match is None:
             # Malformed crypt_table line
-            logger.debug("Invalid crypt_table line!")
+            logger.warning("Invalid crypt_table line!")
             continue
         groups = match.groupdict()
         if (
