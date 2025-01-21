@@ -23,12 +23,13 @@ from typing import IO, Any, Dict, List, NoReturn, Optional, Set, Tuple, Union
 
 from typing_extensions import Literal, TypedDict
 
+print(os.environ)
+
 import zephyr_ctypes
 import zulip
 from zulip import RandomExponentialBackoff
 
 DEFAULT_SITE = "https://api.zulip.com"
-
 
 class States(Enum):
     Startup = auto()
@@ -1291,7 +1292,11 @@ or specify the --api-key-file option."""
         logger.error("--session-path is required with --use-sessions")
         sys.exit(1)
 
-    zulip_account_email = options.user + "@mit.edu"
+    if '@' in options.user:
+        zulip_account_email = options.user
+    else:
+        zulip_account_email = options.user + "@mit.edu"
+    #options.user + "@mit.edu"
 
     start_time = time.time()
 
