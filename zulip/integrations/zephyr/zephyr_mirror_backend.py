@@ -38,7 +38,7 @@ DEFAULT_SITE = "https://api.zulip.com"
 # the per-class mirrors *receive* them, so a rotation needs to be staggered.
 # Each separate Zulip instance mirrored with a single Zephyr realm needs a
 # unique value here.
-ZEPHYR_DEFAULT_FORMAT = ["Error: http://mit.edu/df?a"]
+ZEPHYR_DEFAULT_FORMAT = [b"Error: http://mit.edu/df?s"]
 
 
 class States(Enum):
@@ -488,7 +488,7 @@ def process_notice(
     if zephyr_class.lower() not in current_zephyr_subs and not is_personal:
         logger.debug("Skipping ... %s/%s/%s", zephyr_class, zephyr_instance, is_personal)
         return
-    if notice.z_default_format in ZEPHYR_DEFAULT_FORMAT or notice.z_default_format.endswith("@(@color(blue))"):
+    if notice.z_default_format in ZEPHYR_DEFAULT_FORMAT or notice.z_default_format.endswith(b"@(@color(blue))"):
         logger.debug("Skipping message we got from Zulip!")
         return
     if (
